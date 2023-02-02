@@ -90,7 +90,6 @@ class CommonLogTool
             $res = curl_exec($curl);
             curl_close($curl);
             $res = json_decode($res, true) ?: [];
-            var_dump($res);
             if (isset($res['code']) && $res['code'] == 200) {
                 return true;
             }
