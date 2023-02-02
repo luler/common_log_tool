@@ -71,7 +71,7 @@ class CommonLogTool
                     'url' => $value['url'] ?? '', //必填
                     'waste_time' => $value['waste_time'] ?? 0, //非必填
                     'message' => $value['message'] ?? '', //必填
-                    'other' => $value['code'] ?? '', //非必填
+                    'other' => $value['other'] ?? '', //非必填
                     'create_time' => $value['create_time'] ?? date('Y-m-d H:i:s'), //必填
                     'client_ip' => $value['client_ip'] ?? '127.0.0.1', //必填
                     'server_ip' => $value['server_ip'] ?? '127.0.0.1', //必填
