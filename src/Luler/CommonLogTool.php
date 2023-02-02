@@ -28,30 +28,38 @@ class CommonLogTool
 
     private function getLogAccessToken()
     {
-        $res = $this->getCacheDataByKey();
-        if (!empty($res)) {
-            return $res;
+        try {
+            $res = $this->getCacheDataByKey();
+            if (!empty($res)) {
+                return $res;
+            }
+
+            $url = $this->host . $this->url_getAccessToken;
+            $post_data = [
+                'appid' => $this->appid,
+                'appsecret' => $this->appsecret,
+            ];
+            $curl = curl_init($url);
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
+            $res = curl_exec($curl);
+            curl_close($curl);
+            $res = json_decode($res, true) ?: [];
+
+            if (!isset($res['code']) || $res['code'] != 200) {
+                throw new \Exception(($res['message'] ?? '请求异常，可能网络不通或系统繁忙'));
+            }
+
+            $this->setCacheData([
+                'expires_in' => $res['info']['expires_in'] - 60,
+                'expire_time' => time() + $res['info']['expires_in'] - 60,
+                'access_token' => $res['info']['access_token'],
+            ]);
+            return $res['info']['access_token'];
+        } catch (\Throwable $e) {
+            throw new \Exception('通用日志组件报错：' . $e->getMessage());
         }
-
-        $url = $this->host . $this->url_getAccessToken;
-        $post_data = [
-            'appid' => $this->appid,
-            'appsecret' => $this->appsecret,
-        ];
-        $curl = curl_init($url);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
-        $res = curl_exec($curl);
-        curl_close($curl);
-        $res = json_decode($res, true) ?: [];
-
-        !empty($res['info']) && $this->setCacheData([
-            'expires_in' => $res['info']['expires_in'] - 60,
-            'expire_time' => time() + $res['info']['expires_in'] - 60,
-            'access_token' => $res['info']['access_token'],
-        ]);
-        return $res['info']['access_token'] ?? '';
     }
 
     /**
@@ -90,12 +98,12 @@ class CommonLogTool
             $res = curl_exec($curl);
             curl_close($curl);
             $res = json_decode($res, true) ?: [];
-            if (isset($res['code']) && $res['code'] == 200) {
-                return true;
+            if (!isset($res['code']) || $res['code'] != 200) {
+                throw new \Exception($res['message'] ?? '请求异常，可能网络不通或系统繁忙');
             }
-            return false;
+            return true;
         } catch (\Exception $e) {
-            return false;
+            throw new \Exception('通用日志组件报错：' . $e->getMessage());
         }
 
     }
