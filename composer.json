@@ -15,8 +15,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": ">=7.1",
-    "curl/curl": "^2.3"
+    "php": ">=7.1"
   },
   "autoload": {
     "psr-4": {
