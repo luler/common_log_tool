@@ -4,12 +4,13 @@ namespace Luler;
 
 class CommonLogTool
 {
-    private $appid = '';
-    private $appsecret = '';
-    private $host = '';
-    private $url_getAccessToken = '/api/getAccessToken';
-    private $url_saveLog = '/api/saveLog';
-    private $project_name = '';
+    private $appid = ''; //账号
+    private $appsecret = ''; //密码
+    private $host = ''; //系统地址，格式:http://127.0.0.1
+    private $url_getAccessToken = '/api/getAccessToken'; //获取登录凭证接口
+    private $url_saveLog = '/api/saveLog'; //保存日志接口
+    private $project_name = ''; //项目代码
+    private $redis = null; //redis缓存驱动
 
     public function __construct(string $appid, string $appsecret, string $host, $project_name = 'common_log')
     {
@@ -19,9 +20,15 @@ class CommonLogTool
         $this->project_name = $project_name;
     }
 
+    public function useRedis(\Redis $redis)
+    {
+        $this->redis = $redis;
+        return $this;
+    }
+
     private function getLogAccessToken()
     {
-        $res = $this->getCacheByKey();
+        $res = $this->getCacheDataByKey();
         if (!empty($res)) {
             return $res;
         }
@@ -40,6 +47,7 @@ class CommonLogTool
         $res = json_decode($res, true) ?: [];
 
         !empty($res['info']) && $this->setCacheData([
+            'expires_in' => $res['info']['expires_in'] - 60,
             'expire_time' => time() + $res['info']['expires_in'] - 60,
             'access_token' => $res['info']['access_token'],
         ]);
@@ -129,7 +137,7 @@ class CommonLogTool
 
     private function getCacheKey()
     {
-        return md5(join(',', [$this->appid, $this->appsecret, $this->host]));
+        return 'CommonLogTool:' . md5(join(',', [$this->appid, $this->appsecret, $this->host]));
     }
 
     private function getAllCacheData(): array
@@ -149,17 +157,25 @@ class CommonLogTool
         return $data;
     }
 
-    private function getCacheByKey()
+    private function getCacheDataByKey()
     {
-        return $this->getAllCacheData()[$this->getCacheKey()]['access_token'] ?? '';
+        if (!is_null($this->redis)) {
+            return $this->redis->get($this->getCacheKey());
+        } else {
+            return $this->getAllCacheData()[$this->getCacheKey()]['access_token'] ?? '';
+        }
     }
 
     private function setCacheData(array $value): void
     {
-        $data = $this->getAllCacheData();
-        $data[$this->getCacheKey()] = $value;
-        $data = json_encode($data, 256);
-        file_put_contents($this->getCacheFilePath(), $data);
+        if (!is_null($this->redis)) {
+            $this->redis->set($this->getCacheKey(), $value['access_token'], $value['expires_in']);
+        } else {
+            $data = $this->getAllCacheData();
+            $data[$this->getCacheKey()] = $value;
+            $data = json_encode($data, 256);
+            file_put_contents($this->getCacheFilePath(), $data);
+        }
     }
 
 
