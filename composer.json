@@ -1,0 +1,26 @@
+{
+  "name": "luler/common_log_tool",
+  "description": "通用日志系统工具，封装日志推送api（php版本）",
+  "type": "library",
+  "license": "MIT",
+  "homepage": "https://github.com/luler/common_log_tool",
+  "authors": [
+    {
+      "name": "luler",
+      "email": "1207032539@qq.com",
+      "homepage": "https://github.com/luler",
+      "role": "Developer"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=7.1",
+    "curl/curl": "^2.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Luler\\": "src/Luler/"
+    }
+  }
+}
