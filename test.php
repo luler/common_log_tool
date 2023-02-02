@@ -5,8 +5,9 @@ require 'vendor/autoload.php';
 $log = new \Luler\CommonLogTool(
     'xxx', //账号
     'xxx', //密码
-    'http://127.0.0.1:8888',
-    'common_log');
+    'http://127.0.0.1:8888', //通用系统地址
+    'common_log' //项目代码
+);
 
 $res = $log->infoLog([
     [
