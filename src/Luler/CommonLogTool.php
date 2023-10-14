@@ -76,7 +76,7 @@ class CommonLogTool
                     'waste_time' => $value['waste_time'] ?? 0, //非必填
                     'message' => $value['message'] ?? '', //必填
                     'other' => $value['other'] ?? '', //非必填
-                    'create_time' => intval(microtime(true) * 1000), //必填
+                    'create_time' => $value['create_time'] ?? intval(microtime(true) * 1000), //必填
                     'client_ip' => $value['client_ip'] ?? '127.0.0.1', //必填
                     'server_ip' => $value['server_ip'] ?? '127.0.0.1', //必填
                 ];
