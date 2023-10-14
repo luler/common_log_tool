@@ -23,7 +23,7 @@ $res = $log->infoLog([
         'waste_time' => 1.25, //非必填
         'message' => '请求成功', //必填
         'other' => '暂无', //非必填
-        'create_time' => date('Y-m-d H:i:s'), //必填
+        'create_time' => intval(microtime(true) * 1000), //必填
         'client_ip' => '127.0.0.1', //必填
         'server_ip' => '127.0.0.1', //必填
     ]
