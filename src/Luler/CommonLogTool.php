@@ -96,7 +96,7 @@ class CommonLogTool
         try {
             foreach ($this->log_data as $key => $value) {
                 $value = $value->getData();
-                $value['other'] = !empty($this->other_id) ? ($this->other_id . ' ' . $value['other']) : $value['other'];
+                $value['other'] = !empty($this->other_id) ? ('#' . $this->other_id . '# ' . $value['other']) : $value['other'];
                 $value['project_name'] = $this->project_name;
                 $this->log_data[$key] = $value;
             }
