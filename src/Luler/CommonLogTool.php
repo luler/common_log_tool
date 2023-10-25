@@ -11,21 +11,49 @@ class CommonLogTool
     private $url_saveLog = '/api/saveLog'; //保存日志接口
     private $project_name = ''; //项目代码
     private $redis = null; //redis缓存驱动
+    private $enable_other_id = false; //是否启用其他信息ID功能
+    private $other_id = ''; //每个实例化唯一ID，可用于链式跟踪
+    private $log_data = []; //日志数据
 
-    public function __construct(string $appid, string $appsecret, string $host, $project_name = 'common_log')
+    public function __construct(string $appid, string $appsecret, string $host, string $project_name = 'common_log', bool $enable_other_id = false)
     {
         $this->appid = $appid;
         $this->appsecret = $appsecret;
         $this->host = $host;
         $this->project_name = $project_name;
+        $this->enable_other_id = $enable_other_id;
+        if ($this->enable_other_id) {
+            $this->refreshOtherId();
+        }
     }
 
+    /**
+     * 刷新其他信息ID
+     * @return void
+     * @author 我只想看看蓝天 <1207032539@qq.com>
+     */
+    public function refreshOtherId()
+    {
+        $this->enable_other_id && $this->other_id = session_create_id();
+    }
+
+    /**
+     * 使用redis作为缓存驱动
+     * @param \Redis $redis
+     * @return $this
+     * @author 我只想看看蓝天 <1207032539@qq.com>
+     */
     public function useRedis(\Redis $redis)
     {
         $this->redis = $redis;
         return $this;
     }
 
+    /**
+     * 获取访问凭证
+     * @return mixed|string
+     * @author 我只想看看蓝天 <1207032539@qq.com>
+     */
     private function getLogAccessToken()
     {
         $res = $this->getCacheDataByKey();
@@ -60,30 +88,22 @@ class CommonLogTool
 
     /**
      * 推送日志到通用日志系统
-     * @param array $log_data
      * @return bool
      * @author 我只想看看蓝天 <1207032539@qq.com>
      */
-    private function saveLog(array $log_data): bool
+    private function saveLog(): bool
     {
         try {
-            foreach ($log_data as &$value) {
-                $value = [
-                    'project_name' => $this->project_name, //必填
-                    'level' => $value['level'] ?? '', //必填
-                    'code' => $value['code'] ?? 0, //非必填
-                    'url' => $value['url'] ?? '', //必填
-                    'waste_time' => $value['waste_time'] ?? 0, //非必填
-                    'message' => $value['message'] ?? '', //必填
-                    'other' => $value['other'] ?? '', //非必填
-                    'create_time' => $value['create_time'] ?? intval(microtime(true) * 1000), //必填
-                    'client_ip' => $value['client_ip'] ?? '127.0.0.1', //必填
-                    'server_ip' => $value['server_ip'] ?? '127.0.0.1', //必填
-                ];
+            foreach ($this->log_data as $key => $value) {
+                $value = $value->getData();
+                $value['other'] = !empty($this->other_id) ? ($this->other_id . ' ' . $value['other']) : $value['other'];
+                $value['project_name'] = $this->project_name;
+                $this->log_data[$key] = $value;
             }
             $data = [];
             $data['authorization'] = $this->getLogAccessToken();
-            $data['data'] = $log_data;
+            $data['data'] = $this->log_data;
+            $this->log_data = [];
             $url = $this->host . $this->url_saveLog;
             $curl = curl_init($url);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -105,32 +125,43 @@ class CommonLogTool
     }
 
     /**
-     * @param array $log_data //格式：
+     * 添加日志数据
+     * @param CommonLogData $logData
+     * @return $this
+     * @author 我只想看看蓝天 <1207032539@qq.com>
+     */
+    public function addCommonLogData(CommonLogData $logData)
+    {
+        $this->log_data[] = $logData;
+        return $this;
+    }
+
+    /**
      * @return bool
      * @author 我只想看看蓝天 <1207032539@qq.com>
      */
-    public function errorLog(array $log_data)
+    public function errorLog()
     {
-        foreach ($log_data as &$value) {
-            $value['level'] = 'error';
+        foreach ($this->log_data as $value) {
+            $value->setLevel(CommonLogLevel::ERROR);
         }
-        return $this->saveLog($log_data);
+        return $this->saveLog();
     }
 
-    public function warningLog(array $log_data)
+    public function warningLog()
     {
-        foreach ($log_data as &$value) {
-            $value['level'] = 'warning';
+        foreach ($this->log_data as $value) {
+            $value->setLevel(CommonLogLevel::WARNING);
         }
-        return $this->saveLog($log_data);
+        return $this->saveLog();
     }
 
-    public function infoLog(array $log_data)
+    public function infoLog()
     {
-        foreach ($log_data as &$value) {
-            $value['level'] = 'info';
+        foreach ($this->log_data as $value) {
+            $value->setLevel(CommonLogLevel::INFO);
         }
-        return $this->saveLog($log_data);
+        return $this->saveLog();
     }
 
     private function getCacheFilePath()

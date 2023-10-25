@@ -10,24 +10,29 @@
 
 ```php
 
+<?php
+
+require 'vendor/autoload.php';
+
 $log = new \Luler\CommonLogTool(
-    'xxx', //账号
-    'xxx', //密码
-    'http://127.0.0.1:8888', //通用系统地址
-    'common_log' //项目代码
+    'admin', //账号
+    '******', //密码
+    'http://ip:8888', //通用系统地址
+    'common_log', //项目代码
+    true
+);
 
-$res = $log->infoLog([
-    [
-        'code' => 200, //非必填
-        'url' => '/api/test', //必填
-        'waste_time' => 1.25, //非必填
-        'message' => '请求成功', //必填
-        'other' => '暂无', //非必填
-        'create_time' => intval(microtime(true) * 1000), //必填
-        'client_ip' => '127.0.0.1', //必填
-        'server_ip' => '127.0.0.1', //必填
-    ]
-]);
-
-var_dump($res); //bool,true-推送成功，false-推送失败
+$res = $log->addCommonLogData((new \Luler\CommonLogData())->setMessage('你是'))->infoLog();
+var_dump($res);//bool,true-推送成功，false-推送失败
+$res = $log->addCommonLogData((new \Luler\CommonLogData())->setMessage('你是'))->warningLog();
+var_dump($res);
+$res = $log->addCommonLogData((new \Luler\CommonLogData())->setMessage('你是'))->errorLog();
+var_dump($res);
+$log->refreshOtherId(); //刷新日志ID
+$res = $log->addCommonLogData((new \Luler\CommonLogData())->setMessage('你是'))->infoLog();
+var_dump($res);
+$res = $log->addCommonLogData((new \Luler\CommonLogData())->setMessage('你是'))->warningLog();
+var_dump($res);
+$res = $log->addCommonLogData((new \Luler\CommonLogData())->setMessage('你是'))->errorLog();
+var_dump($res);
 ```
