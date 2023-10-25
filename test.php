@@ -10,18 +10,18 @@ $log = new \Luler\CommonLogTool(
     true
 );
 
-$res = $log->addCommonLogData((new \Luler\CommonLogData())->setMessage('你是'))->infoLog();
+$res = $log->addCommonLogData(\Luler\CommonLogData::create()->setMessage('你是'))->infoLog();
 var_dump($res);
-$res = $log->addCommonLogData((new \Luler\CommonLogData())->setMessage('你是'))->warningLog();
+$res = $log->addCommonLogData(\Luler\CommonLogData::create()->setMessage('你是'))->warningLog();
 var_dump($res);
-$res = $log->addCommonLogData((new \Luler\CommonLogData())->setMessage('你是'))->errorLog();
+$res = $log->addCommonLogData(\Luler\CommonLogData::create()->setMessage('你是'))->errorLog();
 var_dump($res);
 $log->refreshOtherId();
-$res = $log->addCommonLogData((new \Luler\CommonLogData())->setMessage('你是'))->infoLog();
+$res = $log->addCommonLogData(\Luler\CommonLogData::create()->setMessage('你是'))->infoLog();
 var_dump($res);
-$res = $log->addCommonLogData((new \Luler\CommonLogData())->setMessage('你是'))->warningLog();
+$res = $log->addCommonLogData(\Luler\CommonLogData::create()->setMessage('你是'))->warningLog();
 var_dump($res);
-$res = $log->addCommonLogData((new \Luler\CommonLogData())->setMessage('你是'))->errorLog();
+$res = $log->addCommonLogData(\Luler\CommonLogData::create()->setMessage('你是'))->errorLog();
 var_dump($res);
 
 

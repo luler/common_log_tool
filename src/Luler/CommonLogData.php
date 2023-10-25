@@ -20,6 +20,16 @@ class CommonLogData
     }
 
     /**
+     * 创建实例
+     * @return CommonLogData
+     * @author 我只想看看蓝天 <1207032539@qq.com>
+     */
+    public static function create(): CommonLogData
+    {
+        return new self();
+    }
+
+    /**
      * 获取日志数据
      * @return array
      * @author 我只想看看蓝天 <1207032539@qq.com>
@@ -33,8 +43,7 @@ class CommonLogData
             'waste_time' => $this->waste_time,
             'message' => $this->message,
             'other' => $this->other,
-//            'create_time' => $this->create_time,
-            'create_time' => date('Y-m-d H:i:s'),
+            'create_time' => $this->create_time,
             'client_ip' => $this->client_ip,
             'server_ip' => $this->server_ip,
         ];
