@@ -49,9 +49,21 @@ class CommonLogData
         ];
     }
 
-    public function setLevel(string $level)
+    public function setLevelInfo()
     {
-        $this->level = in_array($level, [CommonLogLevel::INFO, CommonLogLevel::WARNING, CommonLogLevel::ERROR,]) ? $level : CommonLogLevel::INFO;
+        $this->level = CommonLogLevel::INFO;
+        return $this;
+    }
+
+    public function setLevelWarning()
+    {
+        $this->level = CommonLogLevel::WARNING;
+        return $this;
+    }
+
+    public function setLevelError()
+    {
+        $this->level = CommonLogLevel::ERROR;
         return $this;
     }
 

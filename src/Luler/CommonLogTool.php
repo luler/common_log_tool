@@ -136,34 +136,6 @@ class CommonLogTool
         return $this;
     }
 
-    /**
-     * @return bool
-     * @author 我只想看看蓝天 <1207032539@qq.com>
-     */
-    public function errorLog()
-    {
-        foreach ($this->log_data as $value) {
-            $value->setLevel(CommonLogLevel::ERROR);
-        }
-        return $this->saveLog();
-    }
-
-    public function warningLog()
-    {
-        foreach ($this->log_data as $value) {
-            $value->setLevel(CommonLogLevel::WARNING);
-        }
-        return $this->saveLog();
-    }
-
-    public function infoLog()
-    {
-        foreach ($this->log_data as $value) {
-            $value->setLevel(CommonLogLevel::INFO);
-        }
-        return $this->saveLog();
-    }
-
     private function getCacheFilePath()
     {
         return dirname(__FILE__) . '/../../token.cache';
