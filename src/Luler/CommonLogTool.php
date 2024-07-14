@@ -91,7 +91,7 @@ class CommonLogTool
      * @return bool
      * @author 我只想看看蓝天 <1207032539@qq.com>
      */
-    private function saveLog(): bool
+    public function saveLog(): bool
     {
         try {
             foreach ($this->log_data as $key => $value) {
