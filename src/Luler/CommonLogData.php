@@ -10,6 +10,7 @@ class CommonLogData
     private $waste_time = 0;
     private $message = '';
     private $other = '';
+    private $other_id = '';
     private $create_time = 0;
     private $client_ip = '0.0.0.0';
     private $server_ip = '0.0.0.0';
@@ -43,6 +44,7 @@ class CommonLogData
             'waste_time' => $this->waste_time,
             'message' => $this->message,
             'other' => $this->other,
+            'other_id' => $this->other_id, //给某一批日志设置相同的ID，有助于链式跟踪
             'create_time' => $this->create_time,
             'client_ip' => $this->client_ip,
             'server_ip' => $this->server_ip,
@@ -94,6 +96,12 @@ class CommonLogData
     public function setOther(string $other)
     {
         $this->other = $other;
+        return $this;
+    }
+
+    public function setOtherId(string $other_id)
+    {
+        $this->other_id = $other_id;
         return $this;
     }
 

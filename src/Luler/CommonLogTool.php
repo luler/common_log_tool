@@ -11,30 +11,14 @@ class CommonLogTool
     private $url_saveLog = '/api/saveLog'; //保存日志接口
     private $project_name = ''; //项目代码
     private $redis = null; //redis缓存驱动
-    private $enable_other_id = false; //是否启用其他信息ID功能
-    private $other_id = ''; //每个实例化唯一ID，可用于链式跟踪
     private $log_data = []; //日志数据
 
-    public function __construct(string $appid, string $appsecret, string $host, string $project_name = 'common_log', bool $enable_other_id = false)
+    public function __construct(string $appid, string $appsecret, string $host, string $project_name = 'common_log')
     {
         $this->appid = $appid;
         $this->appsecret = $appsecret;
         $this->host = $host;
         $this->project_name = $project_name;
-        $this->enable_other_id = $enable_other_id;
-        if ($this->enable_other_id) {
-            $this->refreshOtherId();
-        }
-    }
-
-    /**
-     * 刷新其他信息ID
-     * @return void
-     * @author 我只想看看蓝天 <1207032539@qq.com>
-     */
-    public function refreshOtherId()
-    {
-        $this->enable_other_id && $this->other_id = session_create_id();
     }
 
     /**
@@ -96,7 +80,7 @@ class CommonLogTool
         try {
             foreach ($this->log_data as $key => $value) {
                 $value = $value->getData();
-                $value['other'] = !empty($this->other_id) ? ('#' . $this->other_id . '# ' . $value['other']) : $value['other'];
+                $value['other'] = !empty($value['other_id']) ? ('#' . $value['other_id'] . '# ' . $value['other']) : $value['other'];
                 $value['project_name'] = $this->project_name;
                 $this->log_data[$key] = $value;
             }
