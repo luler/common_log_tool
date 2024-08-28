@@ -78,6 +78,9 @@ class CommonLogTool
     public function saveLog(): bool
     {
         try {
+            if (!$this->log_data) { //没有需要保存的日志信息，直接跳出
+                return false;
+            }
             foreach ($this->log_data as $key => $value) {
                 $value = $value->getData();
                 $value['other'] = !empty($value['other_id']) ? ('#' . $value['other_id'] . '# ' . $value['other']) : $value['other'];
