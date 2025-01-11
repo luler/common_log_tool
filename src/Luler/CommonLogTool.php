@@ -54,6 +54,8 @@ class CommonLogTool
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         $res = curl_exec($curl);
         curl_close($curl);
         $res = json_decode($res, true) ?: [];
@@ -88,9 +90,9 @@ class CommonLogTool
                 $this->log_data[$key] = $value;
             }
             $data = [];
-            $data['authorization'] = $this->getLogAccessToken();
             $data['data'] = $this->log_data;
             $this->log_data = [];
+            $data['authorization'] = $this->getLogAccessToken();
             $url = $this->host . $this->url_saveLog;
             $curl = curl_init($url);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -98,6 +100,8 @@ class CommonLogTool
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_HTTPHEADER, ['content-type: application/json']);
             curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data, 256));
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
             $res = curl_exec($curl);
             curl_close($curl);
             $res = json_decode($res, true) ?: [];
